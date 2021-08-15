@@ -2,11 +2,16 @@
 # qznctl.sh
 # A simple script to stand up a single instance of an Amazon2 Linux VM. Uses user-networking
 #
-# Suggestion: addd into /etc/hosts .1 and .2. Some machines hang on DNS lookup during SSH auth.
+# Suggestion: add into /etc/hosts .1 and .2. Some machines hang on DNS lookup during SSH auth.
 # e.g.
 # # /etc/hosts
 # 203.0.133.1 qemu-gw.local
 # 203.0.133.2 qemu-dns.local
+#
+# Suggestion: Update your ssh config file to ignore localhost
+# Host 127.0.0.1
+#     StrictHostKeyChecking no
+#     UserKnownHostsFile /dev/null
 
 # Configuration variables. Modify as needed.
 AMZN2_IMAGE="amzn2-kvm-2.0.20210721.2-x86_64.xfs.gpt.qcow2"
