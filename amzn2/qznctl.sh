@@ -1,6 +1,12 @@
 #!/bin/bash
 # qznctl.sh
 # A simple script to stand up a single instance of an Amazon2 Linux VM. Uses user-networking
+#
+# Suggestion: addd into /etc/hosts .1 and .2. Some machines hang on DNS lookup during SSH auth.
+# e.g.
+# # /etc/hosts
+# 203.0.133.1 qemu-gw.local
+# 203.0.133.2 qemu-dns.local
 
 # Configuration variables. Modify as needed.
 AMZN2_IMAGE="amzn2-kvm-2.0.20210721.2-x86_64.xfs.gpt.qcow2"
@@ -14,8 +20,7 @@ SSH_KEY="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC0OqzFm/vPZQoMr8kzWHH4wuBf24GXCQN
 # Use only a /24. IPs are hard coded. Only need to provide the first three octets as "a.b.c."
 # RFC5737 - 192.0.2.0/24 TEST-NET-1, 198.51.100.0/24 TEST-NET-2, 203.0.113.0/24 TEST-NET-3
 # Too many things are utilizing CGN/100.64.0.0/10 nowadays.
-#IP_NET="203.0.133."
-IP_NET="192.168.64."
+IP_NET="203.0.133."
 DNS_FWD_PORT=5353
 SSH_FWD_PORT=2222
 
