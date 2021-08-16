@@ -68,9 +68,7 @@ EOF
     rm -f seed.iso
 
     if [[ ${OS} == "Linux" ]]; then
-        pushd seedconfig
-        genisoimage -output seed.iso -volid cidata -joliet -rock user-data meta-data
-        popd
+        genisoimage -output seed.iso -volid cidata -joliet -rock seedconfig/user-data seedconfig/meta-data
     elif [[ ${OS} == "Darwin" ]]; then
         hdiutil makehybrid -o seed.iso -hfs -joliet -iso -default-volume-name cidata seedconfig/
     fi
@@ -98,15 +96,30 @@ function print-help() {
 # Start the VM
 # Side note, too lazy to write conditional for Linux support at the moment.
 function start() {
+    # Set OS specific flags.
+    qemu_accel=""
+    qemu_display=""
+
+    if [[ ${OS} == "Darwin" ]]; then
+        qemu_accel="hvf"
+        qemu_display="cocoa"
+    elif [[ ${OS} == "Linux" ]]; then
+        qemu_accel="kvm"
+        qemu_display="gtk"
+    else
+        echo "Unknown host OS. Exiting."
+        exit 1
+    fi
+
     qemu-system-x86_64 \
         -name amzn2-devbox.local \
         -machine q35 \
         -cpu host \
-        -accel hvf \
+        -accel ${qemu_accel} \
         -smp cores=${CPU_CORES},threads=${CPU_THREADS} \
         -m ${MEMORY} \
         -vga virtio \
-        -display cocoa,show-cursor=on \
+        -display ${qemu_display},show-cursor=on \
         -drive id=vda,file=vda.qcow2,format=qcow2,if=virtio \
         -netdev user,id=net0,net=${IP_NET}0/29,dhcpstart=${IP_NET}3,host=${IP_NET}1,dns=${IP_NET}2,hostfwd=tcp:127.0.0.1:${SSH_FWD_PORT}-${IP_NET}3:22,hostfwd=tcp:127.0.0.1:${DNS_FWD_PORT}-${IP_NET}3:53 \
         -device virtio-net,netdev=net0 \
